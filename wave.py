@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as an
 import random
+from copy import deepcopy
 
 """MIT License
 
@@ -66,7 +67,10 @@ def main():
         if val == 'transverse':
             ax.plot(xes[i], uyes[i], linestyle='none', marker='o', color='k', markersize=2)
         elif val == 'longitudinal':
-            ax.plot(uxes[i], [i for j in range(len(uxes[i]))], linestyle='none', marker='o', color='k', markersize=2)
+            ax.plot(uxes[i], [i for j in range(len(uxes[i]))], linestyle='none', marker='o',
+                    color='#0A3A4A', markersize=2, zorder=1)
+            if i % 5 == 0:
+                ax.scatter(uxes[i][i], i, color='#D13737', s=8, zorder=2)
 
     def grapher():
         ax.set_xlim([-10, 60])
@@ -76,27 +80,42 @@ def main():
         ax.set_ylabel('y')
 
     grapher()
-    ax.text(10, 10, 't = ' + str(0), transform=ax.transAxes, fontsize=14,
+    ax.text(10, 10, 't = ' + str(0), transform=ax.transAxes, fontsize=12,
             verticalalignment='top')
+
+    def updatePoint(point, color, new_point):
+        old_point = point.get_offsets()
+        newpt = deepcopy(old_point)
+        newpt[0][0] = new_point[0]
+        newpt[0][1] = new_point[1]
+        point.set_offsets(newpt)
+        point.set_facecolors(color)
+        point.axes.figure.canvas.draw_idle()
 
     def init():
         lines = ax.lines
         for i in range(len(lines)):
             lines[i].set_xdata([np.nan] * len(x))
             lines[i].set_ydata([np.nan] * len(x))
+        points = ax.collections
+        new_point = [10, 10]
+        for i in range(len(points)):
+            updatePoint(points[i], 'w', new_point)
+
         return ax.lines
 
     def animate(iter):
         grapher()
         ax.texts[0].remove()  # remove the text we have
-        ax.text(0.05, 0.95, 't = ' + str(iter), transform=ax.transAxes, fontsize=14,
+        ax.text(0.05, 0.95, 't = ' + str(iter), transform=ax.transAxes, fontsize=12,
                 verticalalignment='top')
         if val == 'transverse':
             uyes = [[k2 * A * np.sin(w * t[iter] - kxnew[i][j]) for j in range(len(xes[i]))] for i in range(len(xes))]
         elif val == 'longitudinal':
             uxes = [[k1 * A * np.sin(w * t[iter] - kxnew[i][j]) for j in range(len(xes[i]))] for i in range(len(xes))]
             uxes = [[uxes[i][j] + xes[i][j] for j in range(len(xes[i]))] for i in range(len(xes))]
-
+        ptcount = 0
+        points = ax.collections
         for i in range(len(ax.lines)):
             if val == 'transverse':
                 ax.lines[i].set_xdata(xes[i])
@@ -105,11 +124,15 @@ def main():
             elif val == 'longitudinal':
                 ax.lines[i].set_xdata(uxes[i])
                 ax.lines[i].set_ydata(i)
+                if i % 5 == 0:
+                    new_point = [uxes[i][i], i]
+                    updatePoint(points[ptcount], '#D13737', new_point)
+                    ptcount += 1
         return ax.lines
 
     ani = an.FuncAnimation(fig, animate, len(t), init_func=init)
 
-    writer=an.writers['ffmpeg'](fps=10)
+    writer=an.writers['ffmpeg'](fps=20)
     dpi = 100
     ani.save(val + '.mp4', writer=writer, dpi=dpi)
     plt.show()
