@@ -3,6 +3,7 @@
 
 # TODO: recreate Mathmatica's representation of a transverse wave
 # SOURCE: Matlab guy, PDF Doc, PDf Doc2 and animation guy
+# Contributor: Cole Carey
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,7 +35,7 @@ SOFTWARE."""
 
 def main():
     # longitudinal or transverse
-    val = 'transverse'
+    val = 'longitudinal'
     t = [t for t in range(0, 500)]  # time domain
     # wave vector
     k1 = 0.4
@@ -43,7 +44,7 @@ def main():
     x = [x for x in range(0, 50)]
     xes = []  # x values for the 15 different lines
     for wave in range(1, 10):
-        lst = [x[i] + random.uniform(0, 1) for i in range(len(x))]
+        lst = [x[i] + random.uniform(-0.5, 0.5) for i in range(len(x))]
         xes.append(lst)
 
     ynew = [[k2 / k1 * xes[i][j] for j in range(len(xes[i]))] for i in range(len(xes))]
@@ -63,9 +64,9 @@ def main():
         uxes = [[k1 * A * np.sin(w * 0 - kxnew[i][j]) for j in range(len(xes[i]))] for i in range(len(xes))]
     for i in range(len(xes)):
         if val == 'transverse':
-            ax.plot(xes[i], uyes[i], linestyle='none', marker='o', color='k', markersize=3)
+            ax.plot(xes[i], uyes[i], linestyle='none', marker='o', color='k', markersize=2)
         elif val == 'longitudinal':
-            ax.plot(uxes[i], [i for j in range(len(uxes[i]))], linestyle='none', marker='o', color='k', markersize=3)
+            ax.plot(uxes[i], [i for j in range(len(uxes[i]))], linestyle='none', marker='o', color='k', markersize=2)
 
     def grapher():
         ax.set_xlim([-10, 60])
