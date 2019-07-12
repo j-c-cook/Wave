@@ -1,7 +1,7 @@
 # J. C. (Jack) Cook
 # July 11, 2019
 
-# TODO: recreate Mathmatica's representation of a transverse wave
+# TODO: recreate Mathematica's representation of a transverse wave
 # SOURCE: Matlab guy, PDF Doc, PDf Doc2 and animation guy
 # Contributor: Cole Carey
 
@@ -36,7 +36,7 @@ SOFTWARE."""
 
 def main():
     # longitudinal or transverse
-    val = 'longitudinal'
+    val = 'transverse'
     t = [t for t in range(0, 500)]  # time domain
     # wave vector
     k1 = 0.4
@@ -65,7 +65,9 @@ def main():
         uxes = [[k1 * A * np.sin(w * 0 - kxnew[i][j]) for j in range(len(xes[i]))] for i in range(len(xes))]
     for i in range(len(xes)):
         if val == 'transverse':
-            ax.plot(xes[i], uyes[i], linestyle='none', marker='o', color='k', markersize=2)
+            ax.plot(xes[i], uyes[i], linestyle='none', marker='o', color='#0A3A4A', markersize=2, zorder=1)
+            if i % 5 == 0:
+                ax.scatter(xes[i][i], uyes[i][i], color='#D13737', s=8, zorder=2)
         elif val == 'longitudinal':
             ax.plot(uxes[i], [i for j in range(len(uxes[i]))], linestyle='none', marker='o',
                     color='#0A3A4A', markersize=2, zorder=1)
@@ -121,6 +123,10 @@ def main():
                 ax.lines[i].set_xdata(xes[i])
                 uyes[i] = [uyes[i][j] + i for j in range(len(uyes[i]))]
                 ax.lines[i].set_ydata(uyes[i])
+                if i % 5 == 0:
+                    new_point = [xes[i][i], uyes[i][i]]
+                    updatePoint(points[ptcount], '#D13737', new_point)
+                    ptcount += 1
             elif val == 'longitudinal':
                 ax.lines[i].set_xdata(uxes[i])
                 ax.lines[i].set_ydata(i)
