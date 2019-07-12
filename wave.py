@@ -36,7 +36,7 @@ SOFTWARE."""
 
 def main():
     # longitudinal or transverse
-    val = 'transverse'
+    val = 'longitudinal'
     t = [t for t in range(0, 500)]  # time domain
     # wave vector
     k1 = 0.4
